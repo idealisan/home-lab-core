@@ -168,11 +168,6 @@ button {
   padding: 0 12px;
   background: #f6f6f6;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  cursor: grab;
-}
-
-.window-titlebar:active {
-  cursor: grabbing;
 }
 
 .window-title {
