@@ -118,7 +118,16 @@ function createWindow(config) {
       win.dataset.maximized = 'false';
     } else {
       restoreRect = { x: win.offsetLeft, y: win.offsetTop, width: win.offsetWidth, height: win.offsetHeight };
-      setWindowRect(win, { x: 8, y: 8, width: b.width - 16, height: b.height - 16 });
+      // Leave room for the floating dock instead of filling the whole viewport.
+      const dockTop = dock.getBoundingClientRect().top;
+      const gap = 8;
+      const bottom = b.height - dockTop + gap;
+      setWindowRect(win, {
+        x: gap,
+        y: gap,
+        width: b.width - gap * 2,
+        height: Math.max(160, b.height - gap - bottom),
+      });
       win.dataset.maximized = 'true';
     }
     focusWindow(win);
