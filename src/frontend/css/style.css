@@ -79,24 +79,6 @@ button {
   color: #fff;
 }
 
-.plugin-menu {
-  display: flex;
-  gap: 2px;
-}
-
-.plugin-entry {
-  border: 0;
-  background: transparent;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.plugin-entry:hover {
-  background: rgba(0, 0, 0, 0.08);
-}
-
 .status {
   color: #555;
   font-size: 14px;

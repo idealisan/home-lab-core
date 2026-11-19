@@ -3,7 +3,6 @@
 const desktop = document.getElementById('desktop');
 const windowsLayer = document.getElementById('windows');
 const dock = document.getElementById('dock');
-const pluginMenu = document.getElementById('plugin-menu');
 const clock = document.getElementById('clock');
 
 let zIndex = 10;
@@ -307,38 +306,30 @@ window.addEventListener('message', async (e) => {
   }
 });
 
-/* ---------- Load plugin menu entries from the Lua registry ---------- */
-async function loadPluginEntries() {
+/* ---------- Plugins appear only in the dock; menu bar stays empty for now ---------- */
+async function loadPlugins() {
   try {
     const response = await fetch('/api/plugins');
     const entries = await response.json();
     entries.forEach((entry) => {
-      const button = document.createElement('button');
-      button.className = 'plugin-entry';
-      button.textContent = (entry.icon ? entry.icon + ' ' : '') + (entry.name || entry.id);
-      button.title = entry.description || entry.name || entry.id;
-      button.addEventListener('click', () => openPluginWindow(entry));
-      pluginMenu.appendChild(button);
-
-      if (entry.dock) {
-        const item = document.createElement('button');
-        item.className = 'dock-item';
-        item.dataset.app = entry.id;
-        item.dataset.label = entry.name || entry.id;
-        item.setAttribute('aria-label', entry.name || entry.id);
-        item.textContent = entry.icon || '🧩';
-        const dot = document.createElement('span');
-        dot.className = 'dock-dot';
-        item.appendChild(dot);
-        item.addEventListener('click', () => openPluginWindow(entry));
-        dock.appendChild(item);
-      }
+      if (!entry.dock) return;
+      const item = document.createElement('button');
+      item.className = 'dock-item';
+      item.dataset.app = entry.id;
+      item.dataset.label = entry.name || entry.id;
+      item.setAttribute('aria-label', entry.name || entry.id);
+      item.textContent = entry.icon || '🧩';
+      const dot = document.createElement('span');
+      dot.className = 'dock-dot';
+      item.appendChild(dot);
+      item.addEventListener('click', () => openPluginWindow(entry));
+      dock.appendChild(item);
     });
   } catch (err) {
-    console.warn('load plugin entries failed:', err);
+    console.warn('load plugins failed:', err);
   }
 }
-loadPluginEntries();
+loadPlugins();
 
 /* Open a couple of windows so the desktop is populated on first load. */
 openWindow(apps[0]);
