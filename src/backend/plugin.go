@@ -28,6 +28,7 @@ type pluginMeta struct {
 	Icon        string       `json:"icon"`
 	Menu        string       `json:"menu"`
 	Web         string       `json:"web"`
+	Shell       string       `json:"shell"`
 	Dock        bool         `json:"dock"`
 	Window      windowConfig `json:"window"`
 	Dir         string       `json:"-"`
@@ -116,6 +117,7 @@ func (r *pluginRegistry) load(path, dir string) (*plugin, error) {
 	p.meta.Icon = stringField(tbl, "icon")
 	p.meta.Menu = stringField(tbl, "menu")
 	p.meta.Web = stringField(tbl, "web")
+	p.meta.Shell = stringField(tbl, "shell")
 	p.meta.Dock = boolField(tbl, "dock")
 	if w, ok := tbl.RawGetString("window").(*lua.LTable); ok {
 		p.meta.Window.Width = intField(w, "width")
@@ -181,7 +183,7 @@ func (r *pluginRegistry) registerHostAPI(p *plugin) {
 	}))
 
 	L.SetField(host, "shell_start", L.NewFunction(func(L *lua.LState) int {
-		if err := r.sessions.start(L.OptString(1, "")); err != nil {
+		if err := r.sessions.start(L.OptString(1, ""), p.meta.Shell); err != nil {
 			L.Push(lua.LString(err.Error()))
 			return 1
 		}

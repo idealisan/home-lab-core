@@ -49,7 +49,7 @@ func newSessionManager() *sessionManager {
 	return &sessionManager{sessions: map[string]*shellSession{}}
 }
 
-func (m *sessionManager) start(id string) error {
+func (m *sessionManager) start(id, shellType string) error {
 	if id == "" {
 		return fmt.Errorf("missing session id")
 	}
@@ -62,12 +62,7 @@ func (m *sessionManager) start(id string) error {
 	m.sessions[id] = s
 	m.mu.Unlock()
 
-	var c *exec.Cmd
-	if runtime.GOOS == "windows" {
-		c = exec.Command("cmd.exe", "/Q")
-	} else {
-		c = exec.Command("/bin/sh")
-	}
+	c := shellCommand(shellType)
 	c.Env = os.Environ()
 
 	stdin, err := c.StdinPipe()
@@ -92,7 +87,7 @@ func (m *sessionManager) start(id string) error {
 		m.remove(id)
 		return err
 	}
-	if runtime.GOOS == "windows" {
+	if (shellType == "" || shellType == "cmd") && runtime.GOOS == "windows" {
 		_, _ = io.WriteString(stdin, "@echo off\r\n")
 	}
 	go copyOutput(s, stdout)
@@ -102,6 +97,26 @@ func (m *sessionManager) start(id string) error {
 		m.remove(id)
 	}()
 	return nil
+}
+
+// shellCommand picks the long-running process for a plugin session. Plugins
+// declare their shell in metadata ("powershell", "cmd", or empty for the OS
+// default), so new console plugins do not need changes in Go.
+func shellCommand(shellType string) *exec.Cmd {
+	if shellType == "powershell" || shellType == "pwsh" {
+		for _, name := range []string{"pwsh", "pwsh.exe", "powershell.exe", "powershell"} {
+			if path, err := exec.LookPath(name); err == nil {
+				return exec.Command(path, "-NoLogo", "-NoProfile")
+			}
+		}
+	}
+	if shellType == "cmd" && runtime.GOOS == "windows" {
+		return exec.Command("cmd.exe", "/Q")
+	}
+	if runtime.GOOS == "windows" {
+		return exec.Command("cmd.exe", "/Q")
+	}
+	return exec.Command("/bin/sh")
 }
 
 func copyOutput(s *shellSession, r io.Reader) {

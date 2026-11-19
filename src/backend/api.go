@@ -74,7 +74,7 @@ func (r *pluginRegistry) pluginHandler(w http.ResponseWriter, req *http.Request)
 		switch body.Hook {
 		case "on_ui_show":
 			r.ensureFirstRun(id)
-			if err := r.sessions.start(body.Session); err != nil {
+			if err := r.sessions.start(body.Session, p.meta.Shell); err != nil {
 				writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 				return
 			}

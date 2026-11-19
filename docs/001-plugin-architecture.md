@@ -31,7 +31,9 @@ plugins/<id>/
 
 ## Lua 侧职责
 
-1. 元数据：`id / name / version / description / icon / menu / dock / web / window`
+1. 元数据：`id / name / version / description / icon / menu / dock / web / window / shell`
+   - `shell` 声明会话使用的解释器：`powershell`（优先 pwsh，回退 powershell.exe）、`cmd`、留空为系统默认
+   - 第二个插件 `plugins/powershell/` 仅靠元数据 + Lua + web 资源接入，未改动核心逻辑，用于验证契约可复用
 2. 生命周期钩子
 3. 事件处理：`on_command(session, cmd)`
 4. 调用 Host API

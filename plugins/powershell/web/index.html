@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>PowerShell 控制台</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="term">
+    <div class="term-bar">
+      <span class="dot"></span>
+      <span>PowerShell · <span id="session-label"></span></span>
+    </div>
+    <div class="quick">
+      <button data-cmd="Get-Location">Get-Location</button>
+      <button data-cmd="Get-Date">Get-Date</button>
+      <button data-cmd="Get-Process | Select-Object -First 5">进程</button>
+      <button data-cmd="$PSVersionTable.PSVersion">版本</button>
+    </div>
+    <pre id="output" class="output"></pre>
+    <div class="input-line">
+      <span class="prompt">PS&gt;</span>
+      <input id="cmd" autocomplete="off" spellcheck="false" autofocus placeholder="输入 PowerShell 命令，回车执行">
+    </div>
+  </div>
+  <script src="/sdk.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
