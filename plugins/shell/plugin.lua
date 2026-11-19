@@ -18,7 +18,7 @@ plugin = {
   icon = ">_",
   menu = "插件",
   dock = true,
-  web = "web/index.html",
+  web = "index.html",
   window = { width = 760, height = 460 },
 }
 

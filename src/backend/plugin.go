@@ -131,7 +131,7 @@ func (r *pluginRegistry) load(path, dir string) (*plugin, error) {
 		p.meta.Name = p.meta.ID
 	}
 	if p.meta.Web == "" {
-		p.meta.Web = "web/index.html"
+		p.meta.Web = "index.html"
 	}
 	if p.meta.Window.Width <= 0 {
 		p.meta.Window.Width = 720

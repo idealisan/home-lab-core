@@ -10,7 +10,7 @@ plugin = {
   menu = "插件",
   dock = true,
   shell = "powershell",
-  web = "web/index.html",
+  web = "index.html",
   window = { width = 800, height = 480 },
 }
 

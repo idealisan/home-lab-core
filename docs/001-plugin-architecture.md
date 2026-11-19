@@ -32,6 +32,7 @@ plugins/<id>/
 ## Lua 侧职责
 
 1. 元数据：`id / name / version / description / icon / menu / dock / web / window / shell`
+   - `web` 是 `web/` 目录下的入口文件名（如 `index.html`），URL 前缀 `/api/plugins/{id}/web/` 由路由层统一拼接
    - `shell` 声明会话使用的解释器：`powershell`（优先 pwsh，回退 powershell.exe）、`cmd`、留空为系统默认
    - 第二个插件 `plugins/powershell/` 仅靠元数据 + Lua + web 资源接入，未改动核心逻辑，用于验证契约可复用
 2. 生命周期钩子
