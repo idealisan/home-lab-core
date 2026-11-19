@@ -1,0 +1,324 @@
+:root {
+  --menubar-height: 30px;
+  --dock-height: 78px;
+  --accent: #0a84ff;
+  --window-radius: 12px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  color: #1d1d1f;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* ---------- Menu bar ---------- */
+.menubar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--menubar-height);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: rgba(250, 250, 250, 0.72);
+  backdrop-filter: saturate(180%) blur(24px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 13px;
+}
+
+.menubar-left,
+.menubar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.apple {
+  display: inline-flex;
+  color: #1d1d1f;
+}
+
+.app-name {
+  font-weight: 600;
+}
+
+.menu-items {
+  display: flex;
+  gap: 2px;
+}
+
+.menu-item {
+  border: 0;
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: default;
+  font-size: 13px;
+}
+
+.menu-item:hover,
+.menu-item.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.plugin-menu {
+  display: flex;
+  gap: 2px;
+}
+
+.plugin-entry {
+  border: 0;
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.plugin-entry:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.status {
+  color: #555;
+  font-size: 14px;
+}
+
+.clock {
+  min-width: 92px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Desktop ---------- */
+.desktop {
+  position: fixed;
+  inset: var(--menubar-height) 0 var(--dock-height) 0;
+  overflow: hidden;
+}
+
+.wallpaper {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1000px 520px at 78% 8%, rgba(255, 160, 122, 0.75), transparent 60%),
+    radial-gradient(900px 620px at 18% 92%, rgba(108, 92, 231, 0.7), transparent 62%),
+    radial-gradient(800px 500px at 80% 90%, rgba(0, 206, 201, 0.45), transparent 60%),
+    linear-gradient(135deg, #1b2a4a 0%, #3a2e5d 45%, #7b4397 100%);
+  filter: saturate(115%);
+}
+
+.wallpaper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.windows {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.desktop-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+/* ---------- Windows ---------- */
+.window {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 460px;
+  height: 320px;
+  min-width: 260px;
+  min-height: 180px;
+  background: #fff;
+  border-radius: var(--window-radius);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  pointer-events: auto;
+  animation: window-in 160ms ease-out;
+}
+
+.window.minimized {
+  display: none;
+}
+
+@keyframes window-in {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.window-titlebar {
+  position: relative;
+  height: 38px;
+  flex: 0 0 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: #f6f6f6;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: grab;
+}
+
+.window-titlebar:active {
+  cursor: grabbing;
+}
+
+.window-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3a3a3c;
+  pointer-events: none;
+}
+
+.traffic-lights {
+  display: flex;
+  gap: 8px;
+  z-index: 1;
+}
+
+.light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+
+.light.close { background: #ff5f57; }
+.light.minimize { background: #febc2e; }
+.light.maximize { background: #28c840; }
+
+.window-body {
+  flex: 1;
+  padding: 20px 24px;
+  overflow: auto;
+  background: #fff;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #333;
+  user-select: text;
+}
+
+.window-body h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.window-body .muted {
+  color: #86868b;
+}
+
+/* ---------- Dock ---------- */
+.dock {
+  position: fixed;
+  inset: auto 0 0 0;
+  height: var(--dock-height);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 16px 10px;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: saturate(180%) blur(24px);
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.dock-item {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  border: 0;
+  border-radius: 13px;
+  background: linear-gradient(160deg, #ffffff, #d9d9de);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  cursor: pointer;
+  transition: transform 140ms ease;
+}
+
+.dock-item:hover {
+  transform: translateY(-8px) scale(1.08);
+}
+
+.dock-item::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.dock-item:hover::after {
+  opacity: 1;
+}
+
+.dock-separator {
+  width: 1px;
+  height: 44px;
+  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.dock-dot {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #333;
+  opacity: 0;
+}
+
+.dock-item.running .dock-dot {
+  opacity: 1;
+}
