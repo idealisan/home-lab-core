@@ -49,7 +49,7 @@ plugins/<id>/
 
 ## HTTP 接口
 
-- `GET /api/plugins` → 插件元数据列表（目前只用于生成 Dock 入口；顶部菜单栏展示什么尚未确定，暂不填充）
+- `GET /api/plugins` → 插件元数据列表（目前只用于生成 Dock 入口；顶部菜单栏已移除，插件入口只在 Dock）
 - `GET /api/plugins/{id}/web/...` → 插件静态资源
 - `POST /api/plugins/{id}/lifecycle` → `{hook, session}`
 - `POST /api/plugins/{id}/call` → `{method, session, args}`

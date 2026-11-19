@@ -1,7 +1,5 @@
 :root {
-  --menubar-height: 30px;
   --dock-height: 78px;
-  --accent: #0a84ff;
   --window-radius: 12px;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Microsoft YaHei", sans-serif;
@@ -27,74 +25,11 @@ button {
   color: inherit;
 }
 
-/* ---------- Menu bar ---------- */
-.menubar {
-  position: fixed;
-  inset: 0 0 auto 0;
-  height: var(--menubar-height);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  background: rgba(250, 250, 250, 0.72);
-  backdrop-filter: saturate(180%) blur(24px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  font-size: 13px;
-}
-
-.menubar-left,
-.menubar-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.apple {
-  display: inline-flex;
-  color: #1d1d1f;
-}
-
-.app-name {
-  font-weight: 600;
-}
-
-.menu-items {
-  display: flex;
-  gap: 2px;
-}
-
-.menu-item {
-  border: 0;
-  background: transparent;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: default;
-  font-size: 13px;
-}
-
-.menu-item:hover,
-.menu-item.active {
-  background: var(--accent);
-  color: #fff;
-}
-
-.status {
-  color: #555;
-  font-size: 14px;
-}
-
-.clock {
-  min-width: 92px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
 /* ---------- Desktop ---------- */
 .desktop {
   position: fixed;
-  /* Extend to the bottom so the wallpaper also sits behind the floating dock. */
-  inset: var(--menubar-height) 0 0 0;
+  /* Full viewport, including the area behind the floating dock. */
+  inset: 0;
   overflow: hidden;
 }
 

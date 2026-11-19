@@ -71,7 +71,7 @@
 接口：
 
 - `GET /api/health`：健康检查
-- `GET /api/plugins`：插件列表占位（供顶部菜单栏未来展示插件入口）
+- `GET /api/plugins`：插件列表（当前用于生成 Dock 中的插件入口）
 
 ## 路线图
 

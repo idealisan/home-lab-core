@@ -3,7 +3,6 @@
 const desktop = document.getElementById('desktop');
 const windowsLayer = document.getElementById('windows');
 const dock = document.getElementById('dock');
-const clock = document.getElementById('clock');
 
 let zIndex = 10;
 let cascade = 0;
@@ -38,16 +37,6 @@ function openPluginWindow(meta) {
     height: meta.window?.height || 460,
   });
 }
-
-/* ---------- Clock ---------- */
-function updateClock() {
-  const now = new Date();
-  const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-  const pad = (n) => String(n).padStart(2, '0');
-  clock.textContent = `${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-}
-updateClock();
-setInterval(updateClock, 10000);
 
 /* ---------- Window management ---------- */
 function clamp(value, min, max) {
@@ -270,17 +259,6 @@ desktop.addEventListener('dblclick', (event) => {
     width: 420,
     height: 280,
     html: `<h2>新窗口</h2><p class="muted">这是一个占位窗口。双击桌面空白处可以继续新建。</p>`,
-  });
-});
-
-/* ---------- Menu bar interactions ---------- */
-document.querySelectorAll('.menu-item').forEach((item) => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.menu-item').forEach((el) => el.classList.remove('active'));
-    item.classList.add('active');
-    setTimeout(() => item.classList.remove('active'), 200);
-    if (item.dataset.menu === 'plugins') openWindow(apps.find((a) => a.id === 'plugins'));
-    if (item.dataset.menu === 'help') openWindow(apps.find((a) => a.id === 'about'));
   });
 });
 
