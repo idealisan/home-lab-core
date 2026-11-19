@@ -21,9 +21,16 @@ func main() {
 		log.Fatalf("frontend assets: %v", err)
 	}
 
+	sessions := newSessionManager()
+	registry, err := newPluginRegistry(sessions)
+	if err != nil {
+		log.Fatalf("plugins: %v", err)
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/health", healthHandler)
-	mux.HandleFunc("/api/plugins", pluginsHandler)
+	mux.HandleFunc("/api/plugins", registry.listHandler)
+	mux.HandleFunc("/api/plugins/", registry.pluginHandler)
 	mux.Handle("/", http.FileServer(http.FS(frontend)))
 
 	server := &http.Server{
@@ -43,12 +50,6 @@ func healthHandler(w http.ResponseWriter, _ *http.Request) {
 		"status": "ok",
 		"name":   "home-lab-core",
 	})
-}
-
-// pluginsHandler is a placeholder for the Lua plugin registry. The menu bar is
-// designed to render plugin entries from this endpoint once plugins exist.
-func pluginsHandler(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, []map[string]string{})
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

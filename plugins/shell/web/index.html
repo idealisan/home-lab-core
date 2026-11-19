@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Shell 控制台</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="term">
+    <div class="term-bar">
+      <span class="dot"></span>
+      <span>Shell · <span id="session-label"></span></span>
+    </div>
+    <pre id="output" class="output"></pre>
+    <div class="input-line">
+      <span class="prompt">$</span>
+      <input id="cmd" autocomplete="off" spellcheck="false" autofocus placeholder="输入命令，回车执行">
+    </div>
+  </div>
+  <script src="/sdk.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

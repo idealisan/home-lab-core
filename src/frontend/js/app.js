@@ -10,6 +10,36 @@ let zIndex = 10;
 let cascade = 0;
 const openWindows = new Map();
 
+async function notifyLifecycle(pluginId, hook, session) {
+  if (!pluginId || !session) return;
+  try {
+    await fetch(`/api/plugins/${encodeURIComponent(pluginId)}/lifecycle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hook, session }),
+    });
+  } catch (err) {
+    console.warn('lifecycle notify failed:', hook, err);
+  }
+}
+
+function openPluginWindow(meta) {
+  const session = `s-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const web = meta.web || 'index.html';
+  const src = `/api/plugins/${encodeURIComponent(meta.id)}/web/${web}`
+    + `?plugin=${encodeURIComponent(meta.id)}&session=${encodeURIComponent(session)}`;
+  return openWindow({
+    id: meta.id,
+    title: meta.name || meta.id,
+    icon: meta.icon,
+    iframe: src,
+    plugin: meta,
+    session,
+    width: meta.window?.width || 720,
+    height: meta.window?.height || 460,
+  });
+}
+
 /* ---------- Clock ---------- */
 function updateClock() {
   const now = new Date();
@@ -65,19 +95,33 @@ function createWindow(config) {
     <div class="window-body"></div>
   `;
   win.querySelector('.window-title').textContent = config.title;
-  win.querySelector('.window-body').innerHTML = config.html || '';
+  const body = win.querySelector('.window-body');
+  body.innerHTML = config.html || '';
+  if (config.iframe) {
+    body.classList.add('has-iframe');
+    const frame = document.createElement('iframe');
+    frame.className = 'window-iframe';
+    frame.src = config.iframe;
+    frame.title = config.title;
+    body.appendChild(frame);
+  }
   windowsLayer.appendChild(win);
   setWindowRect(win, { x, y, width, height });
   focusWindow(win);
+  if (config.plugin) notifyLifecycle(config.plugin.id, 'on_ui_show', config.session);
 
   let restoreRect = { x, y, width, height };
 
   win.querySelector('.light.close').addEventListener('click', () => {
+    if (config.plugin) notifyLifecycle(config.plugin.id, 'on_close', config.session);
     win.remove();
     openWindows.delete(config.id);
   });
   win.querySelector('.light.minimize').addEventListener('click', () => {
-    win.classList.toggle('minimized');
+    const hidden = win.classList.toggle('minimized');
+    if (config.plugin) {
+      notifyLifecycle(config.plugin.id, hidden ? 'on_ui_hide' : 'on_ui_show', config.session);
+    }
   });
   win.querySelector('.light.maximize').addEventListener('click', () => {
     const b = desktop.getBoundingClientRect();
@@ -241,7 +285,29 @@ document.querySelectorAll('.menu-item').forEach((item) => {
   });
 });
 
-/* ---------- Load plugin menu entries (reserved for Lua plugins) ---------- */
+/* ---------- Host bridge: plugin iframes call Go through postMessage ---------- */
+window.addEventListener('message', async (e) => {
+  const d = e.data;
+  if (!d || d.__hlc !== true || d.type !== 'call') return;
+  try {
+    const res = await fetch(`/api/plugins/${encodeURIComponent(d.plugin)}/call`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ method: d.method, session: d.session, args: d.args }),
+    });
+    const body = await res.json();
+    e.source.postMessage({
+      __hlc: true, type: 'result', id: d.id, ok: res.ok,
+      result: body.result, error: body.error,
+    }, '*');
+  } catch (err) {
+    e.source.postMessage({
+      __hlc: true, type: 'result', id: d.id, ok: false, error: String(err),
+    }, '*');
+  }
+});
+
+/* ---------- Load plugin menu entries from the Lua registry ---------- */
 async function loadPluginEntries() {
   try {
     const response = await fetch('/api/plugins');
@@ -249,15 +315,24 @@ async function loadPluginEntries() {
     entries.forEach((entry) => {
       const button = document.createElement('button');
       button.className = 'plugin-entry';
-      button.textContent = entry.name || entry.id;
-      button.addEventListener('click', () =>
-        openWindow({
-          id: `plugin-${entry.id}`,
-          title: entry.name || entry.id,
-          html: `<h2>${entry.name || entry.id}</h2><p class="muted">插件功能占位。</p>`,
-        })
-      );
+      button.textContent = (entry.icon ? entry.icon + ' ' : '') + (entry.name || entry.id);
+      button.title = entry.description || entry.name || entry.id;
+      button.addEventListener('click', () => openPluginWindow(entry));
       pluginMenu.appendChild(button);
+
+      if (entry.dock) {
+        const item = document.createElement('button');
+        item.className = 'dock-item';
+        item.dataset.app = entry.id;
+        item.dataset.label = entry.name || entry.id;
+        item.setAttribute('aria-label', entry.name || entry.id);
+        item.textContent = entry.icon || '🧩';
+        const dot = document.createElement('span');
+        dot.className = 'dock-dot';
+        item.appendChild(dot);
+        item.addEventListener('click', () => openPluginWindow(entry));
+        dock.appendChild(item);
+      }
     });
   } catch (err) {
     console.warn('load plugin entries failed:', err);
